@@ -3,7 +3,7 @@ title: Chapter 5. The X Window System
 part: Part I. Getting Started
 prev: books/handbook/ports
 next: books/handbook/wayland
-description: This chapter describes how to install and configure Xorg on FreeBSD, which provides the open source X Window System used to provide a graphical environment
+description: This chapter describes how to install and configure the X Window System providing a graphical environment
 tags: ["X11", "Xorg", "TrueType", "Intel", "AMD", "NVIDIA", "Anti-Aliased", "VESA", "SCFB"]
 showBookMenu: true
 weight: 7
@@ -52,8 +52,7 @@ endif::[]
 == Synopsis
 
 An installation of FreeBSD using bsdinstall does not automatically install a graphical user interface.
-This chapter describes how to install and configure Xorg, which provides the open source X Window System used to provide a graphical environment.
-It then describes how to find and install a desktop environment or window manager.
+This chapter describes how to install and configure the Xorg server, which provides the open source X Window System (commonly abreviated X11) used to provide a graphical environment.
 
 Before reading this chapter, you should:
 
@@ -61,50 +60,17 @@ Before reading this chapter, you should:
 
 After reading this chapter, you will know:
 
+* How to select and install drivers for you graphics hardware.
 * The various components of the X Window System, and how they interoperate.
-* How to install and configure Xorg.
-* How to use TrueType(R) fonts in Xorg.
-* How to set up your system for graphical logins (XDM).
-
-[[x-install]]
-== Installing Xorg
-
-On FreeBSD, Xorg can be installed as a package or port.
-
-The binary meta package can be installed quickly but with fewer options for customization:
-
-[source,shell]
-....
-# pkg install xorg
-....
-
-Either of these installations results in the complete Xorg system being installed.
-
-The current user must be a member of the `video` group.
-To add a user to `video` group, execute the following command:
-
-[source,shell]
-....
-# pw groupmod video -m username
-....
-
-[TIP]
-====
-A smaller version of the X system suitable for experienced users is available in package:x11/xorg-minimal[].
-Most of the documents, libraries, and applications will not be installed.
-Some applications require these additional components to function.
-====
-
-[TIP]
-====
-Video cards, monitors, and input devices are automatically detected and do not require any manual configuration.
-Do not create `xorg.conf` or run a `-configure` step unless automatic configuration fails.
-====
+* How to install and configure the Xorg server.
+* How to use fonts in the X Window System.
 
 [[x-graphic-card-drivers]]
 == Graphic card drivers
 
-The following table shows the different graphics cards supported by FreeBSD, which package should be installed and its corresponding module.
+Before FreeBSD can render a graphical environment, it needs a driver to interact with the graphics hardware.
+Graphics drivers are a fast moving, cross platform target, so this is developed and distributed separately from the FreeBSD base system.
+The following table shows the different graphics cards supported by FreeBSD, which package should be installed, and its corresponding module.
 
 .Graphic card packages
 [options="header", cols="1,1,1,1"]
@@ -148,7 +114,7 @@ The following table shows the different graphics cards supported by FreeBSD, whi
 
 |===
 
-The following command can be used to identify which graphics card is installed in the system:
+The following command can be used to identify which graphics hardware is installed in the system:
 
 [source,shell]
 ....
@@ -189,18 +155,18 @@ machdep.bootmethod: BIOS
 [[x-configuration-intel]]
 === Intel(R)
 
-Intel(R) Graphics refers to the class of graphics chips that are integrated on the same die as an Intel(R) CPU.
+Intel(R) Graphics are commonly integrated on an Intel(R) CPU.
 Wikipedia offers link:https://en.wikipedia.org/wiki/List_of_Intel_graphics_processing_units[a good overview of the variations and names used for generations of Intel HD Graphics].
 
-The package:graphics/drm-kmod[] package indirectly provides a range of kernel modules for use with Intel(R) Graphics cards.
-The Intel(R) driver can be installed by executing the following command:
+The package:graphics/drm-kmod[] package indirectly provides a range of kernel modules for use with Intel(R) Graphics.
+The Intel(R) Graphics driver can be installed by executing the following command:
 
 [source,shell]
 ....
 # pkg install drm-kmod
 ....
 
-Then add the module to `/etc/rc.conf` file, executing the following command:
+Then add the module to `/etc/rc.conf` file, by executing the following command:
 
 [source,shell]
 ....
@@ -209,7 +175,7 @@ Then add the module to `/etc/rc.conf` file, executing the following command:
 
 [TIP]
 ====
-If a high CPU usage is noticed or excessive tearing with HD video, the installation of package:multimedia/libva-intel-driver[] may help.
+If a high CPU usage is noticed or excessive tearing with HD video, the installation of the Intel(R) video acceleration driver package:multimedia/libva-intel-driver[] may help.
 To install the package execute the following command:
 
 [source,shell]
@@ -221,11 +187,12 @@ To install the package execute the following command:
 [[x-configuration-amd]]
 === AMD(R)
 
-The package:graphics/drm-kmod[] package indirectly provides a range of kernel modules for use with AMD(R) Graphics cards.
-The modules `amdgpu` and `radeonkms` can be used depending the generation of the hardware.
+AMD(R) Graphics are usually standalone or occasionally integrated on an AMD(R) CPU.
+The package:graphics/drm-kmod[] package indirectly provides a range of kernel modules for use with AMD(R) Graphics.
+The modules `amdgpu` or `radeonkms` can be used depending the generation of the hardware.
 The FreeBSD project maintains an link:https://wiki.freebsd.org/Graphics/AMD-GPU-Matrix[AMD graphics support matrix to determine which driver must be used].
 
-AMD(R) driver can be installed by executing the following command:
+The AMD(R) Graphics drivers can be installed by executing the following command:
 
 [source,shell]
 ....
@@ -249,6 +216,7 @@ For older graphic cards (pre-HD7000 or pre-Tahiti) add the module to `/etc/rc.co
 [[x-configuration-nvidia]]
 === NVIDIA(R)
 
+NVIDIA(R) Graphics are usually standalone accellerator cards.
 FreeBSD supports different versions of the proprietary NVIDIA(R) driver.
 Users of newer graphics cards should install the package:x11/nvidia-driver[] package.
 Those with older cards will have to check below which version supports them.
@@ -277,10 +245,10 @@ Those with older cards will have to check below which version supports them.
 
 [WARNING]
 ====
-Version 304 of the NVIDIA(R) graphics driver (nvidia-driver-304) does not support xorg-server 1.20 or later.
+Version 304 of the NVIDIA(R) Graphics driver (nvidia-driver-304) does not support xorg-server 1.20 or later.
 ====
 
-The latest NVIDIA(R) driver can be installed by running the following command:
+The latest NVIDIA(R) Graphics driver can be installed by running the following command:
 
 [source,shell]
 ....
@@ -304,16 +272,41 @@ The `nvidia` driver must be used if the packages x11/nvidia-driver-304 or x11/nv
 ....
 ====
 
+[[x-install]]
+== Installing Xorg
+
+On FreeBSD, the Xorg server can be installed as a package or compiled locally with the ports tree.
+
+The binary meta package can be installed quickly but with fewer options for customization:
+
+[source,shell]
+....
+# pkg install xorg
+....
+
+Either of these installations results in the complete Xorg system being installed.
+
+The current user must be a member of the `video` group to run a graphical environment.
+To add a user to `video` group, execute the following command:
+
+[source,shell]
+....
+# pw groupmod video -m username
+....
+
+[TIP]
+====
+A smaller version of the X Window System suitable for experienced users is available in package:x11/xorg-minimal[].
+Most of the documents, libraries, and applications will not be installed.
+Some applications require these additional components to function.
+====
+
 [[x-config]]
 == Xorg Configuration
 
 Xorg supports most common video cards, keyboards, and pointing devices.
-
-[WARNING]
-====
 Video cards, monitors, and input devices are automatically detected and do not require any manual configuration.
-Do not create [.filename]#xorg.conf# or run a `Xorg -configure` step unless automatic configuration fails.
-====
+Do not create `xorg.conf` or run a `-configure` step unless automatic configuration fails.
 
 [[x-config-files]]
 === Configuration Files
@@ -566,7 +559,9 @@ EndSection
 [[x-config-input]]
 === Input Devices
 
-Xorg supports the vast majority of input devices via package:x11/libinput[].
+The Xorg server supports the vast majority of input devices via package:x11/libinput[].
+This is the recomended path and is selected automatically.
+Alternatively, there are older, lightweight, individual drivers for specific input devices available via packages named x11/xf86-input-[foo].
 
 [TIP]
 ====
@@ -596,48 +591,19 @@ EndSection
 ====
 
 [[x-fonts]]
-== Using Fonts in Xorg
+== Using Fonts in the X Window System
 
-The default fonts that ship with Xorg are less than ideal for typical desktop publishing applications.
-Large presentation fonts show up jagged and unprofessional looking, and small fonts are almost completely unintelligible.
-However, there are several free, high quality Type1 (PostScript(R)) fonts available which can be readily used with Xorg.
+The X Window System allows the user to install and use most types of fonts.
+The default fonts included with the Xorg server are historical.
+There are primarily two types of fonts users will be interested in:
 
-[[type1]]
-=== Type1 Fonts
+* TrueType(R) fonts look and scale great on screens.
+* Type1 (PostScript(R)) fonts look and scale great on paper.
 
-The URW font collection (package:x11-fonts/urwfonts[]) includes high quality versions of standard type1 fonts (Times Roman(TM), Helvetica(TM), Palatino(TM) and others).
-The Freefonts collection (package:x11-fonts/freefonts[]) includes many more fonts, but most of them are intended for use in graphics software such as the Gimp, and are not complete enough to serve as screen fonts.
-In addition, Xorg can be configured to use TrueType(R) fonts with a minimum of effort.
-For more details on this, see the man:X[7] manual page or <<truetype>>.
+There are plenty of free, high quality fonts of both types available which can be readily used with X Window System.
+This chapter provides a breif overview of both, as well as the X FreeType interface, controlling anti-aliasing.
 
-To install the above Type1 font collections from binary packages, run the following commands:
-
-[source,shell]
-....
-# pkg install urwfonts
-....
-
-And likewise with the freefont or other collections.
-To have the X server detect these fonts, add an appropriate line to the X server configuration file ([.filename]#/usr/local/etc/X11/xorg.conf.d/90-fonts.conf#), which reads:
-
-[.programlisting]
-....
-Section "Files"
-  FontPath "/usr/local/share/fonts/urwfonts/"
-EndSection
-....
-
-Alternatively, at the command line in the X session run:
-
-[source,shell]
-....
-% xset fp+ /usr/local/share/fonts/urwfonts
-% xset fp rehash
-....
-
-This will work but will be lost when the X session is closed, unless it is added to the startup file ([.filename]#~/.xinitrc# for a normal `startx` session, or [.filename]#~/.xsession# when logging in through a graphical login manager like XDM).
-A third way is to use the new [.filename]#/usr/local/etc/fonts/local.conf# as demonstrated in <<antialias>>.
-
+For more information about how to install and configure fonts on FreeBSD, please read the article link:{fonts}[Fonts and FreeBSD].
 [[truetype]]
 === TrueType(R) Fonts
 
@@ -682,6 +648,42 @@ or add a `FontPath` line to [.filename]#xorg.conf#.
 
 Now Gimp, LibreOffice, and all of the other X applications should now recognize the installed TrueType(R) fonts.
 Extremely small fonts (as with text in a high resolution display on a web page) and extremely large fonts (within LibreOffice) will look much better now.
+
+[[type1]]
+=== Type1 Fonts
+
+The URW font collection (package:x11-fonts/urwfonts[]) includes high quality versions of standard type1 fonts (Times Roman(TM), Helvetica(TM), Palatino(TM) and others).
+The Freefonts collection (package:x11-fonts/freefonts[]) includes many more fonts, but most of them are intended for use in graphics software such as the Gimp, and are not complete enough to serve as screen fonts.
+In addition, Xorg can be configured to use TrueType(R) fonts with a minimum of effort.
+For more details on this, see the man:X[7] manual page or <<truetype>>.
+
+To install the above Type1 font collections from binary packages, run the following commands:
+
+[source,shell]
+....
+# pkg install urwfonts
+....
+
+And likewise with the freefont or other collections.
+To have the X server detect these fonts, add an appropriate line to the X server configuration file ([.filename]#/usr/local/etc/X11/xorg.conf.d/90-fonts.conf#), which reads:
+
+[.programlisting]
+....
+Section "Files"
+  FontPath "/usr/local/share/fonts/urwfonts/"
+EndSection
+....
+
+Alternatively, at the command line in the X session run:
+
+[source,shell]
+....
+% xset fp+ /usr/local/share/fonts/urwfonts
+% xset fp rehash
+....
+
+This will work but will be lost when the X session is closed, unless it is added to the startup file ([.filename]#~/.xinitrc# for a normal `startx` session, or [.filename]#~/.xsession# when logging in through a graphical login manager like XDM).
+A third way is to use the new [.filename]#/usr/local/etc/fonts/local.conf# as demonstrated in <<antialias>>.
 
 [[antialias]]
 === Anti-Aliased Fonts
@@ -823,5 +825,3 @@ To enable this, add the line somewhere in [.filename]#local.conf#:
 ====
 Depending on the sort of display, `rgb` may need to be changed to `bgr`, `vrgb` or `vbgr`: experiment and see which works best.
 ====
-
-For more information about how to install and configure fonts on FreeBSD, please read the article link:{fonts}[Fonts and FreeBSD].
