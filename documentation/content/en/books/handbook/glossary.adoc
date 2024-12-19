@@ -259,6 +259,12 @@ Discretionary Access Control::
 Data Encryption Standard::
 A method of encrypting information, traditionally used as the method of encryption for UNIX(R) passwords and the man:crypt[3] function.
 
+[[drm-glossary]]
+man:drm[7], Direct Rendering Manager::
+A kernel module allowing client applications direct access to the graphical hardware via the Direct Rendering Infrastructure.
++
+See man:drm[7].
+
 [[dsr-glossary]]
 Data Set Ready::
 An RS232C signal sent from the modem to the computer or terminal indicating a readiness to send and receive data.
@@ -466,6 +472,9 @@ See crossref:glossary[kdc-glossary,Key Distribution Center].
 KLD::
 See crossref:glossary[kld-glossary,Kernel ld(1)].
 
+KMS::
+See crossref:glossary[kms-glossary,Kernel Mode Setting].
+
 KSE::
 See crossref:glossary[kse-glossary,Kernel Scheduler Entities].
 
@@ -474,6 +483,9 @@ See crossref:glossary[kva-glossary,Kernel Virtual Address].
 
 Kbps::
 See crossref:glossary[kbps-glossary,Kilo Bits Per Second].
+
+[[kms-glossary]]
+Setting the display mode in kernel space.
 
 [[kld-glossary]]
 Kernel man:ld[1]::
