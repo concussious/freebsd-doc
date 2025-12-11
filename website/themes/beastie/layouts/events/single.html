@@ -27,6 +27,33 @@
         {{ $eventsData = $dataDefaultLanguage }}
       {{ end }}
 
+      <!-- Load events and number of times -->
+      {{ $countriesCodes := slice }}
+      {{ $countriesCodesTimes := newScratch }}
+
+      {{ with $eventsData }}
+        {{ range (sort .events "year" "desc") }}
+          {{ range .events }}
+            {{ if .countryCode }}
+              {{ $countriesCodes = $countriesCodes | append .countryCode }}
+
+              {{ if $countriesCodesTimes.Get .countryCode }}
+                {{ $countriesCodesTimes.Add .countryCode 1 }}
+              {{ else }}
+                {{ $countriesCodesTimes.Set .countryCode 1 }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      {{ $countriesCodes = $countriesCodes | uniq }}
+
+      {{ $countriesTimes := slice }}
+      {{ range $element := $countriesCodes }}
+        {{ $countriesTimes = $countriesTimes | append ($countriesCodesTimes.Get .) }}
+      {{ end }}
+
       {{ $eventsCounter := 0 }}
 
       {{ if isset .Params "year" }}
